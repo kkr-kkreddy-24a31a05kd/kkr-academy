@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KKR Academy | B.Tech & Career Portal</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --accent: #10b981;
+            --bg-light: #f8fafc;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Loading Overlay */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            padding: 0.8rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary);
+            cursor: pointer;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--primary); }
+
+        /* Sections */
+        section {
+            display: none;
+            padding: 100px 8% 60px;
+            min-height: 100vh;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        section.active { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 140px 5% 100px;
+            background: radial-gradient(circle at top right, #dbeafe, transparent), radial-gradient(circle at bottom left, #f0fdf4, transparent);
+            border-bottom-left-radius: 60px;
+            border-bottom-right-radius: 60px;
+        }
+
+        .hero h1 { font-size: 3.5rem; color: var(--text-dark); margin-bottom: 1rem; }
+        .hero p { font-size: 1.2rem; color: var(--text-light); max-width: 800px; margin: 0 auto 2rem; }
+
+        /* Cards & Grids */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid #f1f5f9;
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .card h3 { color: var(--text-dark); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; }
+        .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #dbeafe; color: var(--primary); }
+
+        /* External Link Buttons */
+        .link-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #f8fafc;
+            color: var(--text-dark);
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid #e2e8f0;
+            transition: 0.2s;
+        }
+
+        .link-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* Chat UI */
+        .chat-box {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            height: 550px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        #chat-content { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #fdfdfd; }
+        .m { padding: 12px 18px; border-radius: 14px; max-width: 85%; font-size: 0.95rem; line-height: 1.4; }
+        .m.bot { background: #f1f5f9; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .m.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+
+        .typing-indicator { font-size: 0.8rem; color: var(--text-light); margin-left: 20px; margin-bottom: 10px; display: none; font-style: italic; }
+
+        .chat-input-area { padding: 15px; border-top: 1px solid #f1f5f9; display: flex; gap: 10px; background: white; }
+        .chat-input-area input { flex: 1; padding: 12px 18px; border: 1px solid #e2e8f0; border-radius: 25px; outline: none; transition: 0.2s; }
+        .chat-input-area input:focus { border-color: var(--primary); }
+
+        .btn {
+            background: var(--primary); color: white; border: none; padding: 10px 20px; 
+            border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s;
+        }
+        .btn:hover { opacity: 0.9; transform: scale(1.02); }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader"><div class="spinner"></div></div>
+
+    <nav>
+        <div class="logo" onclick="showSection('home')">KKR ACADEMY</div>
+        <div class="nav-links">
+            <a onclick="showSection('home')">Home</a>
+            <a onclick="showSection('subjects')">Subjects</a>
+            <a onclick="showSection('portals')">Portals</a>
+            <a onclick="showSection('assistant')">AI Tutor</a>
+        </div>
+    </nav>
+
+    <!-- Home -->
+    <section id="home" class="active">
+        <div class="hero">
+            <h1>Engineered for Success</h1>
+            <p>The ultimate resource hub for B.Tech students. Master your curriculum and get industry-ready with curated coding platforms and certification portals.</p>
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+                <button class="btn" onclick="showSection('subjects')">Start Learning</button>
+                <button class="btn" style="background: var(--accent);" onclick="showSection('portals')">View Portals</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Subjects -->
+    <section id="subjects">
+        <h2 style="margin-bottom: 2rem; text-align: center;">Academic Subjects</h2>
+        <div class="grid" id="subjects-grid"></div>
+    </section>
+
+    <!-- Portals Section -->
+    <section id="portals">
+        <h2 style="text-align: center; margin-bottom: 10px;">Coding & Certification Portals</h2>
+        <p style="text-align: center; color: var(--text-light); margin-bottom: 3rem;">Bridge the gap between academics and industry standards.</p>
+        
+        <h3 style="margin-bottom: 1.5rem; color: var(--primary); border-left: 4px solid var(--primary); padding-left: 10px;">Coding Practice Portals</h3>
+        <div class="grid" style="margin-bottom: 3rem;">
+            <div class="card">
+                <h3>LeetCode <span class="badge">Interview Prep</span></h3>
+                <p>Best for mastering Data Structures and Algorithms for top tech companies.</p>
+                <a href="https://leetcode.com" target="_blank" class="link-btn">Launch LeetCode</a>
+            </div>
+            <div class="card">
+                <h3>HackerRank <span class="badge">Certification</span></h3>
+                <p>Focus on specific language skills and earn badges for your resume.</p>
+                <a href="https://hackerrank.com" target="_blank" class="link-btn">Launch HackerRank</a>
+            </div>
+            <div class="card">
+                <h3>CodeChef <span class="badge">Competitive</span></h3>
+                <p>Join monthly contests and improve your global ranking.</p>
+                <a href="https://codechef.com" target="_blank" class="link-btn">Launch CodeChef</a>
+            </div>
+        </div>
+
+        <h3 style="margin-bottom: 1.5rem; color: var(--accent); border-left: 4px solid var(--accent); padding-left: 10px;">Courses & Certifications</h3>
+        <div class="grid">
+            <div class="card">
+                <h3>Infosys Springboard</h3>
+                <p>High-quality corporate training courses for engineering students.</p>
+                <a href="https://infyspringboard.onwingspan.com" target="_blank" class="link-btn">Visit Springboard</a>
+            </div>
+            <div class="card">
+                <h3>AWS Academy</h3>
+                <p>Master Cloud Computing with official Amazon Web Services training.</p>
+                <a href="https://aws.amazon.com/training/" target="_blank" class="link-btn">Go to AWS</a>
+            </div>
+            <div class="card">
+                <h3>HP LIFE</h3>
+                <p>Free business and IT skills training for students and entrepreneurs.</p>
+                <a href="https://www.life-global.org" target="_blank" class="link-btn">Visit HP LIFE</a>
+            </div>
+            <div class="card">
+                <h3>Wadhwani Foundation</h3>
+                <p>Employability skills and entrepreneurship training programs.</p>
+                <a href="https://wfglobal.org" target="_blank" class="link-btn">Explore Wadhwani</a>
+            </div>
+            <div class="card">
+                <h3>Microsoft Learn</h3>
+                <p>Interactive learning paths for Azure, AI, and developer tools.</p>
+                <a href="https://learn.microsoft.com" target="_blank" class="link-btn">Go to MS Learn</a>
+            </div>
+            <div class="card">
+                <h3>TCS iON</h3>
+                <p>Digital learning and certifications recognized by industry leaders.</p>
+                <a href="https://learning.tcsionhub.in" target="_blank" class="link-btn">Visit TCS iON</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Assistant -->
+    <section id="assistant">
+        <h2 style="text-align: center; margin-bottom: 2rem;">AI Learning Assistant</h2>
+        <div class="chat-box">
+            <div id="chat-content">
+                <div class="m bot">Hi! I'm your AI Tutor. I'm ready to help you with your subjects or career portals.
+                    <br><br><b>Example questions:</b>
+                    <br>• What are ACID properties?
+                    <br>• How to start on LeetCode?
+                    <br>• Tell me about AWS Academy.
+                </div>
+            </div>
+            <div id="typing" class="typing-indicator">AI is typing...</div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Ask anything about B.Tech or Careers..." onkeypress="if(event.key==='Enter') send()">
+                <button class="btn" onclick="send()">Send</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Subject Detail View -->
+    <section id="sub-detail">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 id="detail-title">Subject Name</h2>
+            <button class="btn" onclick="showSection('subjects')" style="background: #64748b;">Back</button>
+        </div>
+        <div style="display: flex; gap: 10px; margin-bottom: 2rem; flex-wrap: wrap;">
+            <button class="btn" id="btn-papers" style="background: var(--accent);">Previous Papers</button>
+            <button class="btn" id="btn-quiz" style="background: #f59e0b;">Mock Quiz</button>
+        </div>
+        <div class="grid" id="lesson-grid"></div>
+    </section>
+
+    <script>
+        const curriculum = {
+            "Data Structures": ["Array Basics", "Linked List", "Stack", "Queue", "Binary Tree", "BST", "Hashing", "Sorting", "Graph Theory", "Heaps"],
+            "Operating Systems": ["Process Management", "CPU Scheduling", "Deadlocks", "Memory Mgt", "Paging", "Virtual Memory", "File Systems", "Disk Mgt", "Security", "Shell Scripting"],
+            "Computer Networks": ["OSI Layers", "TCP/IP", "IP Addressing", "Physical Layer", "Routing", "HTTP/HTTPS", "DNS", "Cryptography", "Network Security", "ARP/RARP"],
+            "Maths": ["Matrices", "Differentiation", "Integration", "Laplace", "Fourier", "Probability", "Vector Calculus", "Statistics", "PDE", "ODE"],
+            "Physics": ["Quantum", "Optics", "Fiber", "Semiconductors", "Magnets", "Lasers", "Crystallography", "Ultrasonics", "Relativity", "Nanophysics"],
+            "Chemistry": ["Water Tech", "Electrochem", "Corrosion", "Polymers", "Fuels", "Lubricants", "Phase Rule", "Nanomaterials", "Green Chem", "Spectroscopy"],
+            "DTI": ["Empathy", "Define", "Ideate", "Prototype", "Test", "Design Principles", "Case Study", "UX/UI", "Mind Mapping", "User Journey"],
+            "DBMS": ["ER Model", "SQL", "Normal Forms", "ACID", "Transactions", "Concurrency", "Indexing", "Joins", "NoSQL", "Views"]
+        };
+
+        const aiResponses = [
+            { keys: ["aws", "amazon", "cloud"], res: "AWS Academy provides free courses on Cloud Computing. It's essential for modern developers! Check the Portals section for the link." },
+            { keys: ["leetcode", "practice", "coding"], res: "To start LeetCode, focus on 'Arrays' and 'Strings' first. Use the 'Top 100 Liked Questions' list to build confidence." },
+            { keys: ["hackerrank"], res: "HackerRank is great for getting certified in specific languages like Python or Java. Their 30 Days of Code challenge is perfect for beginners." },
+            { keys: ["infosys", "springboard"], res: "Infosys Springboard offers comprehensive paths for Full Stack Development and emerging technologies like AI/ML." },
+            { keys: ["hp life"], res: "HP LIFE is excellent for soft skills and basic IT literacy. Every course comes with a certificate of completion." },
+            { keys: ["wadhwani"], res: "Wadhwani Foundation specializes in employability skills and entrepreneurship. Great if you're looking to start your own venture!" },
+            { keys: ["acid", "transaction"], res: "ACID stands for Atomicity, Consistency, Isolation, and Durability. These ensure database transactions are processed reliably." },
+            { keys: ["dbms", "database"], res: "DBMS is the backbone of app development. Focus on SQL and Normalization. Visit our DBMS subject page for 10 core lessons." },
+            { keys: ["os", "operating system"], res: "Key OS topics include CPU Scheduling, Deadlocks, and Memory Paging. Check out the OS subject section for tutorials!" },
+            { keys: ["ds", "data structure"], res: "Data Structures like Stacks, Queues, and Linked Lists are vital for efficient coding. Practice these on LeetCode!" },
+            { keys: ["hello", "hi", "hey"], res: "Welcome back! I'm here to help with your B.Tech prep. What are we studying today?" },
+            { keys: ["thanks", "thank you"], res: "You're very welcome! Happy learning. If you have more questions, I'm here." }
+        ];
+
+        function showSection(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function init() {
+            const grid = document.getElementById('subjects-grid');
+            Object.keys(curriculum).forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `<h3>${s}</h3><p>Comprehensive exam prep with 10 lessons.</p>
+                                <button class="btn" style="width:100%; margin-top:10px;" onclick="viewSubject('${s}')">Open Subject</button>`;
+                grid.appendChild(div);
+            });
+
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+            }, 800);
+        }
+
+        function viewSubject(s) {
+            document.getElementById('detail-title').innerText = s;
+            const lGrid = document.getElementById('lesson-grid');
+            lGrid.innerHTML = '';
+            
+            curriculum[s].forEach(l => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `<h4>${l}</h4><button class="link-btn" onclick="window.open('https://www.youtube.com/results?search_query=${encodeURIComponent(s+' '+l)}', '_blank')">Watch Tutorial</button>`;
+                lGrid.appendChild(div);
+            });
+
+            document.getElementById('btn-papers').onclick = () => window.open(`https://www.google.com/search?q=${s}+previous+papers+btech+pdf`, '_blank');
+            document.getElementById('btn-quiz').onclick = () => window.open(`https://www.google.com/search?q=${s}+quiz+mcq+exam`, '_blank');
+            
+            showSection('sub-detail');
+        }
+
+        function send() {
+            const input = document.getElementById('chatInput');
+            const content = document.getElementById('chat-content');
+            const typing = document.getElementById('typing');
+            const val = input.value.trim().toLowerCase();
+            
+            if(!val) return;
+
+            // Add user message
+            const u = document.createElement('div');
+            u.className = 'm user'; u.innerText = input.value;
+            content.appendChild(u);
+            input.value = '';
+            content.scrollTop = content.scrollHeight;
+
+            // Show typing indicator
+            typing.style.display = 'block';
+
+            setTimeout(() => {
+                typing.style.display = 'none';
+                const b = document.createElement('div');
+                b.className = 'm bot';
+                let found = aiResponses.find(r => r.keys.some(k => val.includes(k)));
+                
+                if (found) {
+                    b.innerText = found.res;
+                } else {
+                    b.innerText = "That's an interesting topic! I'm still learning about '" + val + "', but you can check our Portals section for specialized certifications or the Subjects tab for theory!";
+                }
+                
+                content.appendChild(b);
+                content.scrollTop = content.scrollHeight;
+            }, 800);
+        }
+
+        init();
+    </script>
+</body>
+</html>
